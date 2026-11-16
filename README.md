@@ -1,0 +1,114 @@
+# Everpool
+
+**A P2Pool that no one can delete, edit or shut down: not its creator, not
+the developers who ship the node.**
+
+Everpool is an open protocol for decentralized mining pools. Each pool is
+defined by a record on the blockchain itself. Once mined, that record is
+permanent: the pool's rules can never change. The pool's share chain moves
+from node to node, so the pool keeps running when the person who created it
+goes offline for good.
+
+The reference implementation lives in the
+[Bitflash](https://github.com/bitflash-network/bitflash) node, a RandomX
+CPU-mined chain whose nodes all run as Tor onion services. The protocol itself
+is not tied to Bitflash. This repository holds the specification, and later
+the portable library, so other chains can adopt it.
+
+## Why
+
+P2Pool removed the pool operator: no custody, no central template, no
+company. One lever is still there. The share-chain rules (window, share
+spacing, payout split) are hard-coded in the node, so whoever publishes the
+release can change them for everyone. Alternative pools can only be found on
+some website.
+
+Everpool removes that lever too:
+
+- **Anyone can create a pool.** It takes one transaction that burns a small
+  amount of coins into an `OP_RETURN` output carrying the pool's rules: share
+  spacing, window, difficulty floor, an optional creator fee with a hard cap.
+- **No one can delete or edit a pool.** The pool's id is the hash of its
+  rules, so changing one byte gives a different pool with a different id. The
+  original stays on the chain as long as the chain exists.
+- **The creator has no special role.** After the burn there is no admin key,
+  no server and no vote. The pool is the record plus the share chain its
+  miners keep.
+- **Pools move between nodes.** Every day a draw picks a few nodes per pool
+  as *guardians*. They keep and serve the pool's share chain even if they do
+  not mine it, and hand it to the next day's set. A pool nobody mines sleeps
+  with its guardians, and any miner can wake it.
+- **Guardians are availability, not trust.** Every share carries its own
+  proof of work, and the line with the most work wins. A guardian cannot forge
+  a share or change a payout. The worst it can do is stay silent, and the
+  design bounds that.
+- **No consensus change.** Everything is node software and pool protocol. A
+  chain adopts it in an ordinary release, with no fork.
+
+## Two kinds of pool, plus the default
+
+| | Everpool | Private local pool |
+|---|---|---|
+| where it is defined | a record on the chain, a small burn | a pool code the members share; nothing on the chain |
+| who can find it | everyone | only whoever is given the code (and password) |
+| who keeps its share chain | its miners, drawn guardians, volunteers | only its members' nodes |
+| when all its nodes leave | it lives on, and the record restarts it | it is gone, by design |
+
+The chain's existing default pool becomes **pool zero**: entry zero of the
+registry, with today's rules and no fee. Nodes that never upgrade keep mining
+it unchanged.
+
+## How it works, in one page
+
+1. **Record** (spec section 1): a few dozen bytes in `OP_RETURN`: version,
+   network, share rules, fee, name. Strict canonical encoding; anything odd is
+   rejected.
+2. **Pool id** (section 2): the hash of the record plus the network magic. The
+   same rules on another chain are a different pool, so shares cannot be
+   replayed across chains.
+3. **Index** (section 3): every node reads registrations from its own active
+   chain. A pool becomes active after 30 confirmations, and reorgs undo and
+   redo appearances.
+4. **Shares** (sections 5 to 7): a share commits to exactly one pool. Blocks
+   found through a pool carry a small anchor in the coinbase, so anyone can see
+   which pool found them.
+5. **Guardians** (section 10): each node publishes one signed ticket per day
+   that costs a few minutes of CPU work. A rendezvous-hash draw over the
+   tickets gives each pool its own random order: 8 guardians and 8 reserves.
+   Capturing one chosen pool needs about 22 times the honest ticket work, and
+   even then it only buys silence for a day.
+6. **Bounds** (sections 11 and 12): every node has fixed memory, bandwidth and
+   CPU budgets, and the threat model covers each attack with its defence.
+7. **Hostile networks** (section 17): built to work over slow, censored links
+   (Tor bridges such as Snowflake and obfs4) with paced, resumable transfers.
+
+The full specification is in [SPEC.md](SPEC.md).
+
+## Status
+
+| phase | content | status |
+|---|---|---|
+| A | design, reviewed | done |
+| B1 | share rules as parameters, private local pools, traffic isolation | in progress in the Bitflash node |
+| B2 | the on-chain registry index, creating and mining registered pools | started |
+| C | guardians: tickets, the draw, handoff, revival | next |
+| D | end-to-end proof on testnet with real coins, including a node behind a bridge | after C |
+
+Nothing is on mainnet yet. Progress is tracked in the Bitflash repository's
+pull requests.
+
+## Using it in another chain
+
+Everpool needs no consensus change. See [ADOPTING.md](ADOPTING.md) for what a
+chain needs and which parameters it sets.
+
+## Contributing
+
+Review of the specification is the most useful contribution right now:
+attacks we missed, simpler mechanisms, numbers that look wrong. Open an issue.
+Developers of other chains interested in adopting Everpool are welcome too.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
