@@ -1,4 +1,4 @@
-<!-- Mirrored from docs/pool-registry.md in https://github.com/bitflash-network/bitflash, the reference implementation. Paths such as `src/...` and `docs/...` refer to that repository. Amounts are in BTF, Bitflash's coin; another chain sets its own (see ADOPTING.md). -->
+> Mirrored from docs/pool-registry.md in https://github.com/bitflash-network/bitflash, the reference implementation. Paths such as `src/...` and `docs/...` refer to that repository. Amounts are in BTF, Bitflash's coin; another chain sets its own (see ADOPTING.md).
 
 # Everpool: the P2Pool that no one can delete, edit or shut down
 
