@@ -89,7 +89,7 @@ The full specification is in [SPEC.md](SPEC.md).
 | phase | content | status |
 |---|---|---|
 | A | design, reviewed | done |
-| B1 | share rules as parameters, private local pools, traffic isolation | built, paid on testnet, final review |
+| B1 | share rules as parameters, private local pools, traffic isolation | done: merged, paid on testnet across two machines and through Snowflake |
 | B2 | the on-chain registry index, creating and mining registered pools | index and `poolcreate everpool` built, in review |
 | C | guardians: tickets, the draw, handoff, revival | next |
 | D | end-to-end proof on testnet with real coins, including a node behind a bridge | after C |
@@ -130,7 +130,7 @@ check itself against them.
 
 A local pool's share data carries a 32-byte salt after the pool id, as the
 reference implementation does (so a block gives nothing to test a password
-against); SPEC.md describes it once that change is merged there.
+against), as SPEC.md sections 6 and 18 describe.
 
 ```
 make test       # runs the vectors against lib/
