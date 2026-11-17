@@ -95,7 +95,8 @@ The full specification is in [SPEC.md](SPEC.md).
 | D | end-to-end proof on testnet with real coins, including a node behind a bridge | after C |
 
 Nothing is on mainnet yet. Progress is tracked in the Bitflash repository's
-pull requests.
+pull requests. What each claim needs to be proved, and what is already
+proved, is in [PROOFS.md](PROOFS.md).
 
 ## Library and vectors
 
