@@ -1,7 +1,7 @@
 # Builds and runs the portable library's tests and example.
 #
 #   make            build everything
-#   make test       run vectors/record.json against lib/
+#   make test       run the vectors in vectors/ against lib/
 #   make example    run the Bitflash example
 #   make CXX=clang++ test
 
@@ -32,7 +32,7 @@ $(EXAMPLE_BIN): lib/examples/pool_zero.cpp $(LIB_SRC) $(LIB_HDR) | $(BUILD)
 	$(CXX) $(CXXFLAGS) -o $@ lib/examples/pool_zero.cpp $(LIB_SRC)
 
 test: $(TEST_BIN)
-	./$(TEST_BIN) vectors/record.json
+	./$(TEST_BIN) vectors
 
 example: $(EXAMPLE_BIN)
 	./$(EXAMPLE_BIN)

@@ -46,9 +46,11 @@ can use its own peer addresses as long as identities are signed and dialable.
 - Section 17 (Tor bridges: Snowflake, obfs4, webtunnel, meek) matters only for
   chains whose nodes run over Tor, but its pacing and resumable transfers help
   on any slow link.
-- The private local pool (section 18) uses Argon2id from libsodium and
-  identifies members by their onion; another chain substitutes its own node
-  identity.
+- The private local pool (section 18) identifies members by their onion;
+  another chain substitutes its own node identity. Its key derivation is
+  Argon2id with the parameters of libsodium's `crypto_pwhash` (version 1.3,
+  3 passes, 64 MiB, one lane); the library carries its own Argon2id, so
+  libsodium is not needed.
 
 ## Getting help
 
@@ -58,15 +60,32 @@ existing pool setup).
 ## Library and vectors
 
 Start from the portable C++ library in [`lib/`](lib/) and the test vectors in
-[`vectors/record.json`](vectors/record.json) (see the README's "Library and
-vectors"). Copy [`lib/examples/bitflash.h`](lib/examples/bitflash.h), put in
+[`vectors/`](vectors/) (see the README's "Library and vectors"). Copy [`lib/examples/bitflash.h`](lib/examples/bitflash.h), put in
 your chain's network magic, record magics, network floor and pool zero, and
 check them with `everpool::check_params`. The record format, its ranges and
 the pool id tag (`"Bitflash/pool/1"`) are part of the protocol and stay as
 they are; the network magic is what keeps pools apart across chains. The
 burn is checked by the caller, which knows the output's value.
 
-The library covers the record and the pool id today. Pool codes, anchors and
-share rules as parameters follow once they are final and proven in the
-reference implementation. Writing the library in another language? Run it
-against the vectors: they come from the reference implementation itself.
+The library also covers the private local pool's code and keys and the
+coinbase anchors, with [`vectors/local.json`](vectors/local.json) and
+[`vectors/anchor.json`](vectors/anchor.json):
+
+- `parse_code` and `local_code` read and write a `btfl1:` pool code;
+  `derive_local` gives `K`, the local pool id, `A` and `C` from the record,
+  your network magic and the password. The code prefix and the derivation
+  tags (`"Bitflash/localpool/1/..."`) are part of the protocol, like the pool
+  id tag; the network magic keeps chains apart here too.
+- `serialize` and `share_data_hash` give what a coinbase commits to;
+  `anchor_push` gives the push for pool zero (`"p2p"`), a registered pool
+  (`"p2x"`) or a local pool (`"p2l"`); `check_anchor` says whether a coinbase
+  scriptSig carries a pool's anchor and nothing that would let the same work
+  count on another share chain; `classify_anchor` says which pool a block
+  counts for. These read a script exactly as the reference node does, so a
+  chain whose script reader differs (two-byte opcodes from `0xf0`, pushes up
+  to `OP_PUSHDATA4`) should check `next_op` against its own.
+
+Share rules as parameters, the hello and the network messages follow once
+they are final and proven in the reference implementation. Writing the
+library in another language? Run it against the vectors: they come from the
+reference implementation itself.

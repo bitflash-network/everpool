@@ -122,24 +122,30 @@ Measured twice, on a direct Tor connection and through a Snowflake bridge
 
 ## 6. Auditability
 
-- **Done:** the record and pool id library passes 967 vectors generated from
+- **Done:** the library passes 1469 checks against vectors generated from
   the reference node, in CI with g++, clang++ and sanitizers
-  ([vectors](vectors/), [workflow](.github/workflows/lib.yml)).
+  ([vectors](vectors/), [workflow](.github/workflows/lib.yml)): 967 for the
+  record and the pool id, 90 for local pool codes, keys and the `"p2l"` tag,
+  412 for share data, anchor pushes and coinbase scripts. Its own SHA-256,
+  HMAC-SHA256, BLAKE2b and Argon2id also pass the test vectors published
+  with their standards.
 - **Done in the reference node:** self-tests run on every build, fuzz
   targets for the parsers and handlers, and reproducible release builds.
-- **Planned:** vectors for local pool codes, anchors and share rules; every
+- **Planned:** vectors for share rules and the hello; every
   attack and survival run above published as a script; an independent review
   of the final implementation before anything reaches a mainnet. Review is
   open now ([issue #3](https://github.com/bitflash-network/everpool/issues/3)).
 
 ## 7. Other chains
 
-- **Done:** the portable C++ library for the record and the pool id takes
-  the chain's own magic and parameters as inputs ([lib](lib/),
+- **Done:** the portable C++ library for the record, the pool id, local
+  pool codes and keys, and the coinbase anchors takes the chain's own magic
+  and parameters as inputs and needs no other library ([lib](lib/),
   [ADOPTING.md](ADOPTING.md)).
-- **Planned:** the rest of the library (codes, anchors, share rules), then
-  Everpool running on a second proof-of-work chain's test network, built only
-  from this repository, with no Bitflash code or infrastructure.
+- **Planned:** the rest of the library (share rules, the hello, the
+  messages), then Everpool running on a second proof-of-work chain's test
+  network, built only from this repository, with no Bitflash code or
+  infrastructure.
 
 ## 8. Ease of use
 
