@@ -69,6 +69,15 @@ three nodes, one of them given a wrong password (it got nothing):
 Still to do for private pools: members on two separate machines, one of them
 behind a Snowflake bridge.
 
+Done so far, registered pools on an isolated two-node test chain (17
+November 2026), with the node's own `poolcreate everpool` and a real 1 BTF
+burn: the pool was pending, then reorged out at 4 confirmations and left
+`poollist`; the same burn mined again on the new branch brought it back with
+the same id, active at 30 confirmations; a reorg after 31 confirmations
+removed it again, as SPEC section 3 says (depth decides when a pool starts
+counting, never that the chain cannot remove it). The index file was read
+back on every restart with the same answers.
+
 ## 3. Payouts
 
 For every block a test pool finds: the coinbase is rebuilt from the share
