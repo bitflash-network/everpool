@@ -90,7 +90,7 @@ The full specification is in [SPEC.md](SPEC.md).
 |---|---|---|
 | A | design, reviewed | done |
 | B1 | share rules as parameters, private local pools, traffic isolation | done: merged, paid on testnet across two machines and through Snowflake |
-| B2 | the on-chain registry index, creating and mining registered pools | index and `poolcreate everpool` built, in review |
+| B2 | the on-chain registry index, creating and mining registered pools | index and `poolcreate everpool` merged; the `p2x` messages and mining a registered pool next |
 | C | guardians: tickets, the draw, handoff, revival | next |
 | D | end-to-end proof on testnet with real coins, including a node behind a bridge | after C |
 
