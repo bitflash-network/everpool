@@ -89,8 +89,8 @@ The full specification is in [SPEC.md](SPEC.md).
 | phase | content | status |
 |---|---|---|
 | A | design, reviewed | done |
-| B1 | share rules as parameters, private local pools, traffic isolation | in progress in the Bitflash node |
-| B2 | the on-chain registry index, creating and mining registered pools | started |
+| B1 | share rules as parameters, private local pools, traffic isolation | built, paid on testnet, final review |
+| B2 | the on-chain registry index, creating and mining registered pools | index and `poolcreate everpool` built, in review |
 | C | guardians: tickets, the draw, handoff, revival | next |
 | D | end-to-end proof on testnet with real coins, including a node behind a bridge | after C |
 
