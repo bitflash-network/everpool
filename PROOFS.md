@@ -52,9 +52,22 @@ SPEC section 15, Phase D, steps 3 to 5, on testnet with real coins:
 - Every copy is deleted; a fresh miner restarts the pool from its record, same
   id, and finds a block.
 
-Done so far: the first private pool run on Bitflash testnet (16 November
-2026): block 24619 paid two members of a three-node local pool from the
-shares they mined together.
+Done so far, private pools on Bitflash testnet (16 and 17 November 2026),
+three nodes, one of them given a wrong password (it got nothing):
+
+- Block 24619 paid two members 30 and 20 BTF from the shares they mined
+  together; each member spent its own output, confirmed at height 24739
+  (`915fb205...3525`, `cec291ea...f7de`).
+- Again with the salted share format: block 24740 paid each member 25 BTF.
+  Its coinbase carries one `"p2l"` anchor and no pool id. Knowing the code
+  and the right password, 39,390 rebuilds of the share data from chain data
+  matched nothing; only the salt from a member's own share file makes the
+  anchor match. A member restarted from its file and caught up. Both outputs
+  were spent after maturity, confirmed at height 24862
+  (`71a47721...5d27`, `2d99c5c1...7733`).
+
+Still to do for private pools: members on two separate machines, one of them
+behind a Snowflake bridge.
 
 ## 3. Payouts
 
