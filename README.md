@@ -12,8 +12,8 @@ goes offline for good.
 The reference implementation lives in the
 [Bitflash](https://github.com/bitflash-network/bitflash) node, a RandomX
 CPU-mined chain whose nodes all run as Tor onion services. The protocol itself
-is not tied to Bitflash. This repository holds the specification, and later
-the portable library, so other chains can adopt it.
+is not tied to Bitflash. This repository holds the specification and a
+portable library with test vectors, so other chains can adopt it.
 
 ## Why
 
@@ -96,6 +96,28 @@ The full specification is in [SPEC.md](SPEC.md).
 
 Nothing is on mainnet yet. Progress is tracked in the Bitflash repository's
 pull requests.
+
+## Library and vectors
+
+[`lib/`](lib/) is a small C++17 library with no dependencies (it carries its
+own SHA-256). For now it covers the parts whose format is settled: the pool
+registry record (encode, parse, validate, read from an `OP_RETURN`) and the
+pool id. The chain's magics, network floor and pool zero are inputs;
+[`lib/examples/bitflash.h`](lib/examples/bitflash.h) holds Bitflash's values.
+
+[`vectors/record.json`](vectors/record.json) holds test vectors generated from
+the reference implementation, not from this library: valid records of every
+length from 42 to 73 bytes, every reason a record is refused (with the rule
+order), the script shape, the compact canonical form, and pool ids on mainnet
+and testnet. An implementation in any language can check itself against them.
+
+```
+make test       # runs the vectors against lib/
+make example    # prints pool zero's record and ids
+```
+
+Local pool codes, coinbase anchors and share rules come later, once they are
+final in the reference implementation.
 
 ## Using it in another chain
 

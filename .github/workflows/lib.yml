@@ -1,0 +1,33 @@
+name: lib
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: g++
+            cxx: g++
+            flags: -std=c++17 -O2 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wno-sign-conversion
+          - name: clang++
+            cxx: clang++
+            flags: -std=c++17 -O2 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wno-sign-conversion
+          - name: sanitizers
+            cxx: clang++
+            flags: -std=c++17 -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=all
+    name: ${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test vectors
+        run: make test CXX="${{ matrix.cxx }}" CXXFLAGS="${{ matrix.flags }}"
+      - name: Example
+        run: make example CXX="${{ matrix.cxx }}" CXXFLAGS="${{ matrix.flags }}"

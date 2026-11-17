@@ -53,6 +53,20 @@ can use its own peer addresses as long as identities are signed and dialable.
 ## Getting help
 
 Open an issue in this repository describing your chain (PoW, block time,
-existing pool setup). The portable C++ library (record, ids, pool codes,
-anchors, share rules as parameters) will be published here once it is
-finished and proven in the reference implementation.
+existing pool setup).
+
+## Library and vectors
+
+Start from the portable C++ library in [`lib/`](lib/) and the test vectors in
+[`vectors/record.json`](vectors/record.json) (see the README's "Library and
+vectors"). Copy [`lib/examples/bitflash.h`](lib/examples/bitflash.h), put in
+your chain's network magic, record magics, network floor and pool zero, and
+check them with `everpool::check_params`. The record format, its ranges and
+the pool id tag (`"Bitflash/pool/1"`) are part of the protocol and stay as
+they are; the network magic is what keeps pools apart across chains. The
+burn is checked by the caller, which knows the output's value.
+
+The library covers the record and the pool id today. Pool codes, anchors and
+share rules as parameters follow once they are final and proven in the
+reference implementation. Writing the library in another language? Run it
+against the vectors: they come from the reference implementation itself.
