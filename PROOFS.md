@@ -66,8 +66,12 @@ three nodes, one of them given a wrong password (it got nothing):
   were spent after maturity, confirmed at height 24862
   (`71a47721...5d27`, `2d99c5c1...7733`).
 
-Still to do for private pools: members on two separate machines, one of them
-behind a Snowflake bridge.
+- Members on two separate machines, one of them reaching the network only
+  through Snowflake bridges (its Tor's every circuit had a Snowflake bridge
+  as first hop, and Tor made no connection outside the machine except
+  through it): block 24870 paid 26.875 and 23.125 BTF to the two members;
+  after maturity each spent its own output, confirmed at heights 24991 and
+  24992 (`6e25c18a...99af`, `a7001044...9b8d`).
 
 Done so far, registered pools on an isolated two-node test chain (17
 November 2026), with the node's own `poolcreate everpool` and a real 1 BTF
