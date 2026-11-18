@@ -91,7 +91,7 @@ The full specification is in [SPEC.md](SPEC.md).
 | A | design, reviewed | done |
 | B1 | share rules as parameters, private local pools, traffic isolation | done: merged, paid on testnet across two machines and through Snowflake |
 | B2 | the on-chain registry index, creating and mining registered pools | done: merged, a registered pool mined and paid on testnet, payouts spent; closed on mainnet until registered pools can survive their miners |
-| C | guardians: tickets, the draw, handoff, revival | part 1 (tickets, the draw, the guard budget) in review |
+| C | guardians: tickets, the draw, handoff, revival | part 1 merged (tickets, the draw, the guard budget); part 2 (the messages, handoff, revival) next |
 | D | end-to-end proof on testnet with real coins, including a node behind a bridge | after C |
 
 Nothing is on mainnet yet. Progress is tracked in the Bitflash repository's
