@@ -82,6 +82,23 @@ removed it again, as SPEC section 3 says (depth decides when a pool starts
 counting, never that the chain cannot remove it). The index file was read
 back on every restart with the same answers.
 
+Done so far, guardians on Bitflash testnet (18 November 2026), four nodes on
+the reference node with phase C: each made real RandomX tickets for epochs 35
+and 36, they exchanged them and drew. One node mined the registered pool
+`p2xproof` (pool blocks 25809 and 25812); the two nodes the draw named pulled
+its whole line, 506 shares. The miner was then stopped. A fresh node with no
+pool files, connected only to those two guardians, had the complete line in
+41 seconds and mined on it. Its first block, 25817 (`e4972095...7a73`),
+paid the creator fee and the old window: 23.41657107 and 21.85110944 BTF to
+the two miners of the earlier run, 3.76316535 BTF to the stopped miner, and
+0.46915414 BTF to itself. A script rebuilt that coinbase to the satoshi from
+both a guardian's copy of the line and the fresh node's. After maturity the
+fresh node spent its own payout and the stopped miner, brought back, spent
+what the window paid it; both confirmed in block 25938 (`48906eb5...4c50`,
+`f6c3477f...bd39`). Still to do here:
+every guardian down at once with only a carrier left (covered by a self-test,
+not yet on testnet), and revival from the record alone.
+
 ## 3. Payouts
 
 For every block a test pool finds: the coinbase is rebuilt from the share
