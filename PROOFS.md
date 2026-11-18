@@ -93,6 +93,19 @@ reorg of the share chain, and after nodes restart mid-window.
 Done so far: pool zero, the P2Pool Everpool extends, was proved this way on
 Bitflash testnet (paid, matured, spent); the first local pool payout above.
 
+A registered pool on Bitflash testnet (17 November 2026): pool `p2xproof`,
+id `16e4d33e...4508`, 1% creator fee, burned in block 25233 (txid
+`bffb4c0f...8f71`); no node served a template for it before 30
+confirmations. Block 25268 paid the two miners 45.96428572 and 3.53571428
+BTF and the creator 0.5 BTF, with the `"p2x"` anchor in its coinbase. An
+independent script rebuilt that coinbase to the satoshi from the line a
+third node had fetched over the network (`p2xsync`) without mining. Both
+miners spent their outputs after maturity, confirmed in block 25389
+(`5d44733d...44be`, `7fd3970d...c50f`). Over about 4.5 hours the pool found 56
+blocks, the three nodes ended on the same line, no share was refused and no
+peer was scored; a 1.2.34 node mining pool zero alongside had 847 shares
+accepted and none rejected.
+
 ## 4. Scale
 
 A harness on an isolated test network (regtest, so no public chain is
@@ -149,9 +162,11 @@ Measured twice, on a direct Tor connection and through a Snowflake bridge
 
 ## 8. Ease of use
 
-- **Built in the reference node, in review:** a private pool is one command
+- **Built in the reference node, merged:** a private pool is one command
   to create and one to join (`poolcreate`, `pooljoin` with a `btfl1:` code); mining it is
   one startup option.
-- **Planned:** creating a registered pool in one command
-  (`poolcreate everpool`), and both kinds from the wallet's interface, which
+- **Built in the reference node, merged:** creating a registered pool in one
+  command (`poolcreate everpool`, which shows the record before anything is
+  sent) and mining it with one startup option (`-p2pool=<poolid>`).
+- **Planned:** both kinds from the wallet's interface, which
   shows each pool's fingerprint, age, fee and work, never its name alone.
