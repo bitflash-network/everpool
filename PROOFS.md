@@ -95,9 +95,34 @@ the two miners of the earlier run, 3.76316535 BTF to the stopped miner, and
 both a guardian's copy of the line and the fresh node's. After maturity the
 fresh node spent its own payout and the stopped miner, brought back, spent
 what the window paid it; both confirmed in block 25938 (`48906eb5...4c50`,
-`f6c3477f...bd39`). Still to do here:
-every guardian down at once with only a carrier left (covered by a self-test,
-not yet on testnet), and revival from the record alone.
+`f6c3477f...bd39`).
+
+Phase D on Bitflash testnet (18 and 19 November 2026), on the reference node
+with phases B and C:
+
+- **The creator leaves for good.** Pool `phasedB` (id `8279b9ae...115d`) was
+  registered and mined by one node. That node spent its own payout (block
+  26151) and was then shut down for good at height 26151. Another node kept
+  mining B: block 26153 (`84bf17b8...f811`) paid the creator fee, the
+  window the departed creator had mined (48.04156133 BTF) and the new miner
+  (1.45843867 BTF), checked to the satoshi against two other nodes' copies of
+  the line. The new miner spent its output, confirmed in block 26273
+  (`f1569abc...8593`).
+- **Revived from the record alone.** Every node holding pool `phasedA`'s line
+  was stopped and every copy deleted, on both machines. A fresh node with
+  only the chain found no one announcing the pool and no one to ask, started
+  the line again from a first share with no parent, under the same id, and
+  found block 26050 (`17bfe9c0...506e`), checked to the satoshi against two
+  nodes that fetched the new line afterwards. Its payout was spent, confirmed
+  in block 26172 (`27dbdb38...91d0`).
+- **An "edit" makes another pool.** `phasedA` with only its window changed
+  (720 to 1080) got a different id (`4a7b5c45...9969` against
+  `e3468049...5afa`); both are listed as separate pools, each flagged as
+  sharing its name with the other, and the original's record, id and line
+  were untouched and it kept finding blocks.
+
+Still to do here: every guardian down at once with only a carrier left
+(covered by a self-test; on testnet it runs on 19 November).
 
 ## 3. Payouts
 
@@ -122,6 +147,18 @@ miners spent their outputs after maturity, confirmed in block 25389
 blocks, the three nodes ended on the same line, no share was refused and no
 peer was scored; a 1.2.34 node mining pool zero alongside had 847 shares
 accepted and none rejected.
+
+Two registered pools at once on Bitflash testnet (18 November 2026): pool
+`phasedA` (spacing 20 s, window 720, no fee) and pool `phasedB` (spacing 30
+s, window 1440, 1% fee to a fresh address), both burned in block 25999 and
+active at 26028, mined on different nodes. A found blocks 26035 to 26042, B
+found 26030, 26038, 26051, 26054 and 26055. Each of the first five A blocks
+and B's 26030 and 26038 was rebuilt to the satoshi from two independent
+copies of the line, one on each machine; B's fee output was exactly 0.5 BTF
+every time. A node on release 1.2.34 mined pool zero alongside the whole
+time with no share refused. Spent after maturity: A's 26035 payout
+(`b16140d8...ba84`, block 26157), and from B's 26030 both the miner's output
+and the creator fee (`fe69a0ff...5f23`, `5f428be7...1ae9`, block 26151).
 
 ## 4. Scale
 

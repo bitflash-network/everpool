@@ -92,7 +92,7 @@ The full specification is in [SPEC.md](SPEC.md).
 | B1 | share rules as parameters, private local pools, traffic isolation | done: merged, paid on testnet across two machines and through Snowflake |
 | B2 | the on-chain registry index, creating and mining registered pools | done: merged, a registered pool mined and paid on testnet, payouts spent; closed on mainnet until registered pools can survive their miners |
 | C | guardians: tickets, the draw, handoff, revival | done: merged; on testnet a fresh node revived a pool from its guardians after its only miner stopped, and its first block paid the old window |
-| D | end-to-end proof on testnet with real coins, including a node behind a bridge | in progress: three pools registered on testnet, blocks paying to the satoshi, the "edit" and the restart from the record alone done; spends, the creator leaving, the carrier through `poolwho` and the bridges to come |
+| D | end-to-end proof on testnet with real coins, including a node behind a bridge | in progress: two pools at once with a creator fee, the "edit", the creator leaving for good and the restart from the record alone done on testnet, payouts spent; the carrier through `poolwho` and the bridges to come |
 
 Nothing is on mainnet yet. Progress is tracked in the Bitflash repository's
 pull requests. What each claim needs to be proved, and what is already
