@@ -12,7 +12,7 @@ its numbers and the command or transaction that shows it.
 | # | claim | what proves it | status |
 |---|---|---|---|
 | 1 | Attacks cost the attacker and buy little | attack scripts against a testnet pool, with measured cost and effect | planned (Phase C, D) |
-| 2 | A pool outlives its creator and its guardians | testnet runs: creator gone for good, every guardian down at once, revival from a carrier and from the record alone | partial |
+| 2 | A pool outlives its creator and its guardians | testnet runs: creator gone for good, every guardian down at once, revival from a carrier and from the record alone | done |
 | 3 | Payouts are exact and need no one | every coinbase checked to the satoshi against the share chain, across reorgs and restarts, then spent | partial |
 | 4 | It scales to hundreds of pools | a load harness: 200 pools, 2000 simulated miners, CPU, memory, disk and bandwidth per node | planned |
 | 5 | Modest computers can take part | sync time, RAM and traffic measured on a low-end machine, over Tor and over a bridge | planned |
@@ -121,8 +121,16 @@ with phases B and C:
   sharing its name with the other, and the original's record, id and line
   were untouched and it kept finding blocks.
 
-Still to do here: every guardian down at once with only a carrier left
-(covered by a self-test; on testnet it runs on 19 November).
+- **Every guardian down at once, one carrier left.** At height 26613 every
+  node the draw had named a guardian of `phasedA` was stopped at once; the
+  only copy of the line left online was a carrier on a second machine. A
+  fresh node with no pool files and one fixed peer that did not hold the
+  line found nobody to ask, asked its peers who carries the pool
+  (`poolwho`), was given two names, dialled them and had the complete line
+  three minutes after it started. Its block 26616 (`c0d1dd07...f617`) was
+  checked to the satoshi, creator fee included, against its own copy and
+  against a guardian's copy fetched after the block; its payout was spent,
+  confirmed in block 26736 (`8ee3b6a5...ecad`).
 
 ## 3. Payouts
 
@@ -159,6 +167,39 @@ every time. A node on release 1.2.34 mined pool zero alongside the whole
 time with no share refused. Spent after maturity: A's 26035 payout
 (`b16140d8...ba84`, block 26157), and from B's 26030 both the miner's output
 and the creator fee (`fe69a0ff...5f23`, `5f428be7...1ae9`, block 26151).
+
+Miners behind Tor bridges on Bitflash testnet (19 and 20 November 2026),
+SPEC section 17: pool `phasedA` (one share every 20 s) mined by two nodes
+with ordinary Tor and two nodes that reach the network only through a
+bridge, one obfs4 node and one Snowflake node on a second machine, each
+bridge node with about a tenth of the pool's hashrate. Counted over ten
+hours (shares 1082 onwards):
+
+| bridge | shares found | on the line | uncles | lost | paid | the model said |
+|---|---|---|---|---|---|---|
+| Snowflake | 214 | 184 | 25 | 5 (2.3%) | 95.35% | 98.25% |
+| obfs4 | 219 | 207 | 12 | 0 | 98.96% | 98.87% |
+
+Both stayed inside the marks set before the run (at most 5% lost, paid
+within 3 points of the model). One way, the median delay from a bridge node
+to the first ordinary node was 0.61 s (Snowflake) and 0.50 s (obfs4); from
+the ordinary nodes back to the bridge node 1.14 s and 0.68 s, with stalls of
+up to 33 s on the Snowflake side. Four of the Snowflake node's five lost
+shares came during those stalls, which a model fed the median delay does
+not see; fed the delay of the newest share instead, it says 97.33%. Over the
+whole run no socket of either node or of its Tor left the machine except
+through the bridge's own transport process (905 snapshots).
+
+Block 26619 (`a43f84aa...8baa`) paid the obfs4 node 3.35397661 BTF and the
+Snowflake node 0.62111801 BTF, checked to the satoshi against four copies of
+the line on both machines. After maturity each spent its own output
+(`c12594df...101e`, `7257037d...0ebb`).
+
+A fresh obfs4 node fetching the live line, stopped at 700 shares and
+restarted, resumed with only 4 shares sent twice and then kept the same tip
+as an ordinary node. A fresh Snowflake node from an empty data directory,
+its Tor killed at 900 shares, resumed, refused to hand its miner work until
+the line was complete, and found its first share 58 seconds after.
 
 ## 4. Scale
 
