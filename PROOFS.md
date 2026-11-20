@@ -192,14 +192,21 @@ through the bridge's own transport process (905 snapshots).
 
 Block 26619 (`a43f84aa...8baa`) paid the obfs4 node 3.35397661 BTF and the
 Snowflake node 0.62111801 BTF, checked to the satoshi against four copies of
-the line on both machines. After maturity each spent its own output
-(`c12594df...101e`, `7257037d...0ebb`).
+the line on both machines. After maturity each spent its own output, confirmed in blocks 27038 and
+27051 (`c12594df...101e`, `7257037d...0ebb`).
 
 A fresh obfs4 node fetching the live line, stopped at 700 shares and
 restarted, resumed with only 4 shares sent twice and then kept the same tip
 as an ordinary node. A fresh Snowflake node from an empty data directory,
 its Tor killed at 900 shares, resumed, refused to hand its miner work until
 the line was complete, and found its first share 58 seconds after.
+
+Both bridge nodes then guarded the pool. In the draw for epoch 37, which
+every node computed the same way from the chain and the tickets, the obfs4
+node took place 1 and the Snowflake node place 5; in the draw for epoch 38,
+settled ahead of time, the Snowflake node took place 1. A fresh node with no pool files, isolated so that its only peer was
+one bridge node, fetched the whole line (1518 shares) from that node alone:
+in 182 seconds from the Snowflake node and in 124 seconds from the obfs4 node.
 
 ## 4. Scale
 
