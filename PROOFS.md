@@ -11,10 +11,10 @@ its numbers and the command or transaction that shows it.
 
 | # | claim | what proves it | status |
 |---|---|---|---|
-| 1 | Attacks cost the attacker and buy little | attack scripts against a testnet pool, with measured cost and effect | planned (Phase C, D) |
-| 2 | A pool outlives its creator and its guardians | testnet runs: creator gone for good, every guardian down at once, revival from a carrier and from the record alone | partial |
+| 1 | Attacks cost the attacker and buy little | attack scripts against a testnet pool, with measured cost and effect | partial: every attack run as self-tests on an isolated chain; public testnet run to do |
+| 2 | A pool outlives its creator and its guardians | testnet runs: creator gone for good, every guardian down at once, revival from a carrier and from the record alone | done on testnet |
 | 3 | Payouts are exact and need no one | every coinbase checked to the satoshi against the share chain, across reorgs and restarts, then spent | partial |
-| 4 | It scales to hundreds of pools | a load harness: 200 pools, 2000 simulated miners, CPU, memory, disk and bandwidth per node | planned |
+| 4 | It scales to hundreds of pools | a load harness: 200 pools, 2000 simulated miners, CPU, memory, disk and bandwidth per node | partial: 200 pools and 2002 miners in one process; disk and a node's own memory to do |
 | 5 | Modest computers can take part | sync time, RAM and traffic measured on a low-end machine, over Tor and over a bridge | planned |
 | 6 | Anyone can audit it | reproducible tests and vectors, reproducible builds, independent review of the final code | partial |
 | 7 | Other chains can adopt it | the portable library and vectors, then Everpool running on a second chain's test network | partial |
@@ -39,6 +39,59 @@ result with what it cost and what it changed:
   and scored as section 8 says, and pool zero must be unaffected.
 - **Flooding:** `p2x*` messages for pools not carried, oversized shares,
   history asks past the budgets. Measure CPU and memory during the flood.
+
+Done so far (26 November 2026): every attack above, run as self-tests of
+the reference node on an isolated test chain (`bitflash-node
+-selftest=attack-sybil`, `attack-ticket-flood`, `attack-withhold`,
+`attack-stale`, `attack-shares`, `attack-flood`; Bitflash main `d979483`),
+plus one live node flooded over loopback. A run against pools on the public
+testnet is still to do.
+
+- **Sybil on tickets.** With 4096 honest tickets, an attacker with as much
+  ticket work as the honest nodes, twice and three times as much held
+  49.5%, 66.6% and 75.0% of the set (its share of the work: 50, 66.7 and
+  75%). Over 20,000 pools drawn, it held all 16 places of 0, 28 and 202
+  pools; the estimate (A / (H + A))^16 of section 12 says 0.3, 29.5 and
+  198.5, so it holds as the upper side. Aiming at one given pool is
+  heavy-tailed: taking all 16 of its places cost a median of 20.5 times the
+  honest ticket work (10th percentile 5.8, 90th 97.4); section 12 now gives
+  these figures.
+- **Ticket flooding.** 12,288 valid attacker tickets (0.04 ms of CPU each to
+  check here) left the set at exactly 4096; 89 of 300 honest tickets stayed,
+  where about 98 were expected by lowest work hash; no valid ticket was
+  scored, and `poolwho` still named the pool's announcer. At the node's
+  check budget such a flood takes at least 50 minutes to be read.
+- **Withholding.** With all 16 guardians of a pool silent, a new miner
+  started its own line after about 12 minutes; when the live miner's shares
+  reached it, the node ended on the miner's line, the heavier, and its own
+  lone shares were orphaned, the window untouched.
+- **Stale line.** The test found that the anchor check of section 10 was not
+  in the node. It is now (Bitflash PR #106): a line that reaches back past
+  the pool's newest anchor on the main chain but does not hold its share is
+  logged as stale, up to four other announcers are asked for theirs, and the
+  result is logged ten minutes later. The tip stays the line with the most
+  work.
+- **Share manipulation.** Every forged or invalid share was refused: a share
+  naming another pool, a payout list that is not the window's, a wrong
+  height, forged work, a forged deep history (sender scored 60). Shares
+  replayed from another network were dropped unread and unscored, and pool
+  zero was unaffected.
+- **Flooding.** 300,000 `p2xshare` messages for pools not carried cost 2.9 µs
+  of CPU each, with nothing answered and nobody scored; 250 KB ones 518 µs
+  each. 300,000 history asks for pools not carried got at most 8 short
+  answers an interval. 2000 history asks from one unproven connection got
+  one history's worth (0.33 MB). Shares over the 256 KB cap were refused and
+  their senders scored. A live node flooded over loopback stayed between 58
+  and 75 MB of resident memory, its worst case 793 µs per 250 KB message.
+
+A separate review of the whole implementation before mainnet (Bitflash
+PR #106) found no blocker and fixed four should-fix issues: a pool's line
+could grow to about 2 GB on every node mining or carrying it (now let go
+past 1.5 times its cap, 192 MB at the default); an empty "end of history"
+part completed a fetch with nothing; guardians rewrote whole lines every
+two minutes (now all registered lines together at 64 KB/s at most); and
+the anchor check above. Its ASan and UBSan fuzzing of the four pool fuzz
+targets found nothing.
 
 ## 2. Survival
 
@@ -269,7 +322,20 @@ touched):
 Results are published against the bounds of SPEC section 11, so a reader can
 see the margin.
 
-Done so far: the registry index reads a full copy of Bitflash mainnet in 27
+Done so far (26 November 2026, `bitflash-node -selftest=attack-scale`, main
+`d979483`): 200 registered pools and 2002 miners spread by a Zipf law, 61 MB
+of lines, against one node's draw and guard budget. Miners and shares are
+simulated inside one process, not separate nodes or stratum sessions, so
+this measures the node's own work, not a network. Per share, the node spent
+195 to 498 µs of CPU for windows of up to 720 miners and 1.1 to 1.4 ms at
+1000 to 2000 miners; relaying to 8 peers took 1 to 22 MB an hour, 62 MB at
+2000 miners. The guard budget held: at most 8 pools kept, the others turned
+away for lack of room; with ten 22 MB pools and one of 79 MB, four were kept
+(109 MB of the 134 MB budget) and the 79 MB one by nobody, past the 64 MB a
+guardian gives one pool. Disk use and a node's own resident memory are not
+measured yet (the test's figures include its own copies of every line).
+
+Also: the registry index reads a full copy of Bitflash mainnet in 27
 seconds and testnet in 14 seconds, and stays bounded when every block names a
 fake pool (4000 blocks, at most 3743 anchors kept).
 
