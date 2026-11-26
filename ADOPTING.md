@@ -30,6 +30,14 @@ can use its own peer addresses as long as identities are signed and dialable.
   registrations cost something real without keeping honest creators out.
 - **Record magic**: `"BTFP"` in Bitflash (`"BTFL"` for private local pools).
   A chain may keep these or pick its own.
+- **Service bit**: `NODE_POOLREG` is bit 3 in Bitflash, free there because
+  Bitflash has no SegWit (Bitcoin Core uses bit 3 for `NODE_WITNESS`). Take
+  the lowest bit the chain does not already assign.
+- **Coinbase room**: the `"p2x"` anchor takes 68 bytes with its opcode;
+  Bitflash's template ends at 91 of its 100 bytes (section 7). Add up the
+  chain's own template fields (height, extra nonce, the stratum's
+  `extranonce2`) and check that 68 more still fit. A later anchor format
+  comes only with a new share rules version, and has to fit the same way.
 - **Pool zero**: the chain's existing P2Pool rules, written as entry zero.
 - **Confirmations before a pool is active** (30 in Bitflash, with 2-minute
   blocks) and the **epoch length** for the guardian draw (720 blocks, about a
@@ -50,7 +58,9 @@ can use its own peer addresses as long as identities are signed and dialable.
   another chain substitutes its own node identity. Its key derivation is
   Argon2id with the parameters of libsodium's `crypto_pwhash` (version 1.3,
   3 passes, 64 MiB, one lane); the library carries its own Argon2id, so
-  libsodium is not needed.
+  libsodium is not needed. It runs once, when a member creates or joins the
+  pool, never on each connection (the hello uses the derived keys), so a
+  small board with 1 GB of memory can take part.
 
 ## Getting help
 
