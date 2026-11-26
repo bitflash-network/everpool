@@ -213,9 +213,45 @@ one bridge node, fetched the whole line (1518 shares) from that node alone:
 in 182 seconds from the Snowflake node and in 124 seconds from the obfs4
 node.
 
-Still to do on testnet: with every miner of a pool stopped, guardians of a
-new epoch pulling its line from those of the epoch before (SPEC section 15,
-first half of step 4; covered by a self-test), and a bridge node doing it.
+The handoff of a dormant pool on Bitflash testnet (23 to 26 November 2026),
+SPEC section 15, step 4, with 26 guardian nodes making real tickets, one
+obfs4 node and one Snowflake node among them, and a carrier on a second
+machine:
+
+- **Handoff while nobody mines.** Pool `phasedA`'s only miner was stopped at
+  height 29706, in epoch 41. At the switch to epoch 42 (height 30212), six
+  nodes the new draw named that had not been in the old set were started with
+  no copy of the line and pulled it from the old guardians while the pool was
+  dormant. The obfs4 node (place 1) took it through its obfs4 bridge, and the
+  Snowflake node (place 3) through Snowflake. All eleven copies, old and new,
+  were byte for byte the same line (1510 shares, tip height 3131). Some of
+  the six had pulled a copy earlier, while making tickets; those copies were
+  set aside before the run, and the whole pull was then done a second time
+  from empty, each node complete in 100 to 182 seconds. A node on the second
+  machine set to carry the pool and never guard it (`-poolcarry`,
+  `-poolguard=0`) also took the line. Once epoch 41's linger ended (height
+  30420) the old guardians that were not drawn again dropped it.
+- **Revived from the new set.** A fresh node synced from genesis, with no
+  pool files, fetched the line from a guardian of the new set and found block
+  30449 (`1922046e...172b`), checked to the satoshi, creator fee included,
+  against its own copy and against a guardian's. Its payout was spent,
+  confirmed in block 30569 (`3b97067b...18d5`). A fresh node isolated so that
+  its only peer was the obfs4 guardian had the whole line in 227 seconds,
+  and one whose only peer was the Snowflake guardian had it in 163 seconds:
+  bridge nodes that hold the line only because they were drawn serve it
+  alone.
+- **Every guardian of both sets gone during a handoff.** At the next switch
+  (epoch 42 to 43, height 30932), all 21 guardians still running, the old set
+  and the new one, were stopped at once at height 30937. The only copy left
+  online was that carrier on the second machine. A fresh node with no pool files and one fixed peer that did not
+  hold the line asked who carries the pool (`poolwho`), reached the carrier
+  and had the complete line (1508 shares, tip height 3180). Its block 30939
+  (`743369de...4fbf`) paid the old window to the satoshi, creator fee
+  included; its payout was spent, confirmed in block 31059
+  (`53e8990a...f484`).
+
+With this, every step of SPEC section 15's Phase D has been run on testnet
+with real coins.
 
 ## 4. Scale
 
