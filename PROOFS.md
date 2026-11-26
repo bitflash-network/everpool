@@ -224,10 +224,11 @@ machine:
   no copy of the line and pulled it from the old guardians while the pool was
   dormant. The obfs4 node (place 1) took it through its obfs4 bridge, and the
   Snowflake node (place 3) through Snowflake. All eleven copies, old and new,
-  were byte for byte the same line (1510 shares, tip height 3131). Some of
-  the six had pulled a copy earlier, while making tickets; those copies were
-  set aside before the run, and the whole pull was then done a second time
-  from empty, each node complete in 100 to 182 seconds. A node on the second
+  were byte for byte the same line (1510 shares, tip height 3131). The first
+  pass is not counted: the six had pulled a copy earlier, while making
+  tickets, and still remembered their guard state. The pull was done again
+  with no line file and no remembered guard state on any of them, each node
+  complete in 100 to 182 seconds; those are the times given here. A node on the second
   machine set to carry the pool and never guard it (`-poolcarry`,
   `-poolguard=0`) also took the line. Once epoch 41's linger ended (height
   30420) the old guardians that were not drawn again dropped it.
